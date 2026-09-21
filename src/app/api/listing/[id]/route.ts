@@ -3,10 +3,7 @@ import { getListing } from "@/lib/listings";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const listing = getListing(id);
   if (!listing) {

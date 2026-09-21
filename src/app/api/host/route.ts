@@ -67,9 +67,7 @@ export async function GET() {
     listingPerf.reduce((s, l) => s + l.occupancy, 0) / listingPerf.length
   );
   const avgRating =
-    Math.round(
-      (LISTINGS.reduce((s, l) => s + l.rating, 0) / LISTINGS.length) * 100
-    ) / 100;
+    Math.round((LISTINGS.reduce((s, l) => s + l.rating, 0) / LISTINGS.length) * 100) / 100;
 
   // 6-month revenue trend (deterministic baseline + recent real bookings nudged in).
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];

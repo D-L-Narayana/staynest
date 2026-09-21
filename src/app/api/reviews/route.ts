@@ -17,8 +17,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  if (!hasSupabase)
-    return NextResponse.json({ error: "Reviews unavailable" }, { status: 503 });
+  if (!hasSupabase) return NextResponse.json({ error: "Reviews unavailable" }, { status: 503 });
   const body = await req.json().catch(() => ({}));
   const { listingId, author, rating, body: text } = body;
   if (!listingId || !author || !rating || !text)
@@ -38,12 +37,7 @@ export async function POST(req: Request) {
     value_rating: r,
     body: text,
   };
-  const { data, error } = await supabase
-    .from("staynest_reviews")
-    .insert(row)
-    .select()
-    .single();
-  if (error)
-    return NextResponse.json({ error: "Could not save review" }, { status: 500 });
+  const { data, error } = await supabase.from("staynest_reviews").insert(row).select().single();
+  if (error) return NextResponse.json({ error: "Could not save review" }, { status: 500 });
   return NextResponse.json({ review: data });
 }

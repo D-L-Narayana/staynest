@@ -17,19 +17,15 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   if (!hasSupabase) return NextResponse.json({ ok: true });
   const { device, listingId } = await req.json().catch(() => ({}));
-  if (!device || !listingId)
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-  await supabase
-    .from("staynest_wishlist")
-    .insert({ device_id: device, listing_id: listingId });
+  if (!device || !listingId) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  await supabase.from("staynest_wishlist").insert({ device_id: device, listing_id: listingId });
   return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(req: Request) {
   if (!hasSupabase) return NextResponse.json({ ok: true });
   const { device, listingId } = await req.json().catch(() => ({}));
-  if (!device || !listingId)
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  if (!device || !listingId) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
   await supabase
     .from("staynest_wishlist")
     .delete()
