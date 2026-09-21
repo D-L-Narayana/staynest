@@ -33,7 +33,7 @@ export default function SiteFooter() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold">Explore</h4>
+            <h3 className="text-sm font-semibold">Explore</h3>
             <ul className="mt-3 space-y-2 text-sm text-[var(--text-dim)]">
               <li>
                 <Link href="/" className="transition hover:text-[var(--text)]">
@@ -54,7 +54,7 @@ export default function SiteFooter() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold">Hosting</h4>
+            <h3 className="text-sm font-semibold">Hosting</h3>
             <ul className="mt-3 space-y-2 text-sm text-[var(--text-dim)]">
               <li>
                 <Link href="/host" className="transition hover:text-[var(--text)]">
@@ -70,7 +70,7 @@ export default function SiteFooter() {
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold">Get travel inspiration</h4>
+            <h3 className="text-sm font-semibold">Get travel inspiration</h3>
             <p className="mt-3 text-sm text-[var(--text-dim)]">
               New stays and deals, straight to your inbox.
             </p>

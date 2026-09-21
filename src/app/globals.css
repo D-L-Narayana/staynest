@@ -1,38 +1,43 @@
 @import "tailwindcss";
 
+/*
+ * Colour tokens. Light-mode brand values are tuned so white text on a brand
+ * button and brand text on white both clear WCAG AA (≥ 4.5:1); the dark theme
+ * uses brighter variants that clear 4.5:1 against the dark surfaces.
+ */
 :root {
   --bg: #ffffff;
   --surface: #ffffff;
   --muted: #f7f7f7;
   --border: #ebebeb;
   --text: #222222;
-  --text-dim: #717171;
-  --brand: #ff385c;
-  --brand-dark: #e31c5f;
+  --text-dim: #6b6b6b;
+  --brand: #d81b4f; /* 5.01:1 on white */
+  --brand-dark: #b8153f;
   --star: var(--brand);
   --shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* Accent palettes (applied via data-accent on <html>) */
+/* Accent palettes (applied via data-accent on <html>) — light theme */
 :root[data-accent="coral"] {
-  --brand: #ff385c;
-  --brand-dark: #e31c5f;
+  --brand: #d81b4f;
+  --brand-dark: #b8153f;
 }
 :root[data-accent="ocean"] {
-  --brand: #0d6efd;
-  --brand-dark: #0b5ed7;
+  --brand: #0b5ed7; /* 5.84:1 */
+  --brand-dark: #0a4fb5;
 }
 :root[data-accent="forest"] {
-  --brand: #1a9d63;
-  --brand-dark: #157a4d;
+  --brand: #157a4d; /* 5.35:1 */
+  --brand-dark: #10613d;
 }
 :root[data-accent="violet"] {
-  --brand: #7c4dff;
-  --brand-dark: #6a3df0;
+  --brand: #6a3df0; /* 5.93:1 */
+  --brand-dark: #5b2be0;
 }
 :root[data-accent="sunset"] {
-  --brand: #f4631e;
-  --brand-dark: #d9530f;
+  --brand: #c2410c; /* 5.18:1 */
+  --brand-dark: #a3360a;
 }
 
 /* Dark theme (applied via data-theme="dark" on <html>) */
@@ -43,8 +48,30 @@
   --border: #2a2a2e;
   --text: #f4f4f5;
   --text-dim: #a1a1aa;
+  --brand: #ff385c; /* 5.37:1 on #0e0e10 */
+  --brand-dark: #e31c5f;
   --shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
   color-scheme: dark;
+}
+:root[data-theme="dark"][data-accent="coral"] {
+  --brand: #ff385c;
+  --brand-dark: #e31c5f;
+}
+:root[data-theme="dark"][data-accent="ocean"] {
+  --brand: #4d94ff;
+  --brand-dark: #3b82f6;
+}
+:root[data-theme="dark"][data-accent="forest"] {
+  --brand: #2fbf7f;
+  --brand-dark: #22a06b;
+}
+:root[data-theme="dark"][data-accent="violet"] {
+  --brand: #a98bff;
+  --brand-dark: #8b6cff;
+}
+:root[data-theme="dark"][data-accent="sunset"] {
+  --brand: #fb923c;
+  --brand-dark: #f97316;
 }
 
 * {

@@ -45,4 +45,4 @@ Listings, experiences, and services are seed data also mirrored in Supabase, exp
 
 ## Author
 
-**D L Narayana** — [GitHub](https://github.com/Rahul777111)
+**D L Narayana** — [GitHub](https://github.com/D-L-Narayana)

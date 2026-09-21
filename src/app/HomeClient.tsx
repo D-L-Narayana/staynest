@@ -188,6 +188,7 @@ export default function Home({ stats }: { stats: SiteStats }) {
                 onChange={(e) => setQ(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && search()}
                 placeholder="Where to? Try Tokyo, Bali, Italy"
+                aria-label="Search destination"
                 className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--text-dim)]"
               />
             </div>
@@ -196,6 +197,7 @@ export default function Home({ stats }: { stats: SiteStats }) {
               <select
                 value={guests}
                 onChange={(e) => setGuests(Number(e.target.value))}
+                aria-label="Minimum guests"
                 className="bg-transparent text-sm outline-none"
               >
                 <option value={0}>Any guests</option>
@@ -211,6 +213,7 @@ export default function Home({ stats }: { stats: SiteStats }) {
               <select
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
+                aria-label="Maximum nightly price"
                 className="bg-transparent text-sm outline-none"
               >
                 <option value={0}>Any price</option>
@@ -226,6 +229,7 @@ export default function Home({ stats }: { stats: SiteStats }) {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
+                aria-label="Sort results"
                 className="bg-transparent text-sm outline-none"
               >
                 <option value="recommended">Recommended</option>
