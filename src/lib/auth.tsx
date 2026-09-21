@@ -1,16 +1,12 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
-import { supabase, hasSupabase } from "./supabase";
+import { getBrowserSupabase, hasStoredSession, hasSupabase } from "./supabaseBrowser";
+import { createLocalStore } from "@/lib/storage";
 
 const GUEST_KEY = "staynest.guest.v1";
+const guestStore = createLocalStore<boolean>(GUEST_KEY + ".json", false);
 
 type AuthState = {
   user: User | null;
@@ -18,11 +14,7 @@ type AuthState = {
   isGuest: boolean;
   loading: boolean;
   displayName: string;
-  signUp: (
-    email: string,
-    password: string,
-    fullName: string
-  ) => Promise<{ error?: string }>;
+  signUp: (email: string, password: string, fullName: string) => Promise<{ error?: string }>;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   continueAsGuest: () => void;
@@ -33,43 +25,48 @@ const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isGuest, setIsGuest] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const isGuest = guestStore.useValue();
+  // Nothing to load when Supabase is not configured.
+  const [loading, setLoading] = useState(hasSupabase);
+
+  // Subscribe to auth changes exactly once, the first time the client is loaded.
+  const subscribed = useRef(false);
+  const ensureClient = useCallback(async () => {
+    const sb = await getBrowserSupabase();
+    if (!subscribed.current) {
+      subscribed.current = true;
+      sb.auth.onAuthStateChange((_e, s) => {
+        setSession(s);
+        setUser(s?.user ?? null);
+        if (s?.user) guestStore.write(false);
+      });
+    }
+    return sb;
+  }, []);
 
   useEffect(() => {
-    try {
-      setIsGuest(localStorage.getItem(GUEST_KEY) === "1");
-    } catch {
-      /* ignore */
-    }
-    if (!hasSupabase) {
-      setLoading(false);
-      return;
-    }
-    supabase.auth.getSession().then(({ data }) => {
+    if (!hasSupabase) return;
+    let cancelled = false;
+    // Only download supabase-js on load when there is a session to restore.
+    const restore = hasStoredSession()
+      ? ensureClient().then((sb) => sb.auth.getSession())
+      : Promise.resolve({ data: { session: null } });
+    restore.then(({ data }) => {
+      if (cancelled) return;
       setSession(data.session);
       setUser(data.session?.user ?? null);
       setLoading(false);
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      if (s?.user) {
-        setIsGuest(false);
-        try {
-          localStorage.removeItem(GUEST_KEY);
-        } catch {
-          /* ignore */
-        }
-      }
-    });
-    return () => sub.subscription.unsubscribe();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [ensureClient]);
 
   const signUp = useCallback(
     async (email: string, password: string, fullName: string) => {
       if (!hasSupabase) return { error: "Auth is not configured." };
-      const { error } = await supabase.auth.signUp({
+      const sb = await ensureClient();
+      const { error } = await sb.auth.signUp({
         email,
         password,
         options: { data: { full_name: fullName } },
@@ -77,36 +74,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) return { error: error.message };
       return {};
     },
-    []
+    [ensureClient]
   );
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    if (!hasSupabase) return { error: "Auth is not configured." };
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) return { error: error.message };
-    return {};
-  }, []);
+  const signIn = useCallback(
+    async (email: string, password: string) => {
+      if (!hasSupabase) return { error: "Auth is not configured." };
+      const sb = await ensureClient();
+      const { error } = await sb.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (error) return { error: error.message };
+      return {};
+    },
+    [ensureClient]
+  );
 
   const signOut = useCallback(async () => {
-    if (hasSupabase) await supabase.auth.signOut();
-    setIsGuest(false);
-    try {
-      localStorage.removeItem(GUEST_KEY);
-    } catch {
-      /* ignore */
+    if (hasSupabase) {
+      const sb = await ensureClient();
+      await sb.auth.signOut();
     }
-  }, []);
+    guestStore.write(false);
+  }, [ensureClient]);
 
+  /** Demo/guest mode: full UI without an account (persisted per browser). */
   const continueAsGuest = useCallback(() => {
-    setIsGuest(true);
-    try {
-      localStorage.setItem(GUEST_KEY, "1");
-    } catch {
-      /* ignore */
-    }
+    guestStore.write(true);
   }, []);
 
   const displayName =
