@@ -59,7 +59,7 @@ npm run dev                    # http://localhost:3000
 | `npm run dev` / `npm run build` / `npm start`                 | Next.js dev server, production build (27 static pages + 9 API routes), production server |
 | `npm run lint` · `npm run typecheck` · `npm run format:check` | ESLint 9 (flat config, `react-hooks` v7 rules) · `tsc --noEmit` (strict) · Prettier      |
 | `npm test` · `npm run test:coverage`                          | 65 Vitest + Testing Library unit tests (~17 s)                                           |
-| `npm run test:e2e`                                            | 28 Playwright scenarios: 14 specs × (Desktop Chrome + Pixel 7)                           |
+| `npm run e2e`                                            | 28 Playwright scenarios: 14 specs × (Desktop Chrome + Pixel 7)                           |
 
 Environment variables (`.env.example`): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (public anon key — data is protected by RLS) and optional `NEXT_PUBLIC_SITE_URL`. No secret is ever needed in the client or repo.
 
