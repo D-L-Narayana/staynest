@@ -14,11 +14,26 @@
 }
 
 /* Accent palettes (applied via data-accent on <html>) */
-:root[data-accent="coral"] { --brand: #ff385c; --brand-dark: #e31c5f; }
-:root[data-accent="ocean"] { --brand: #0d6efd; --brand-dark: #0b5ed7; }
-:root[data-accent="forest"] { --brand: #1a9d63; --brand-dark: #157a4d; }
-:root[data-accent="violet"] { --brand: #7c4dff; --brand-dark: #6a3df0; }
-:root[data-accent="sunset"] { --brand: #f4631e; --brand-dark: #d9530f; }
+:root[data-accent="coral"] {
+  --brand: #ff385c;
+  --brand-dark: #e31c5f;
+}
+:root[data-accent="ocean"] {
+  --brand: #0d6efd;
+  --brand-dark: #0b5ed7;
+}
+:root[data-accent="forest"] {
+  --brand: #1a9d63;
+  --brand-dark: #157a4d;
+}
+:root[data-accent="violet"] {
+  --brand: #7c4dff;
+  --brand-dark: #6a3df0;
+}
+:root[data-accent="sunset"] {
+  --brand: #f4631e;
+  --brand-dark: #d9530f;
+}
 
 /* Dark theme (applied via data-theme="dark" on <html>) */
 :root[data-theme="dark"] {
@@ -32,31 +47,66 @@
   color-scheme: dark;
 }
 
-* { box-sizing: border-box; }
-html, body { padding: 0; margin: 0; }
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: var(--font-body), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    var(--font-body),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
   letter-spacing: -0.005em;
 }
 
 /* Display font for headings, with refined tracking */
-h1, h2, h3, h4, .font-display {
+h1,
+h2,
+h3,
+h4,
+.font-display {
   font-family: var(--font-display), var(--font-body), ui-sans-serif, system-ui, sans-serif;
   letter-spacing: -0.02em;
 }
-h1 { letter-spacing: -0.035em; }
+h1 {
+  letter-spacing: -0.035em;
+}
 
-* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-*::-webkit-scrollbar { width: 8px; height: 8px; }
-*::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 8px;
+}
 
-input, button, select, textarea { font-family: inherit; }
+input,
+button,
+select,
+textarea {
+  font-family: inherit;
+}
 
 /* Native <select> popups follow the active theme so the dropdown list
    (e.g. guests / price filters) is never white-on-white in dark mode. */
@@ -92,16 +142,23 @@ select optgroup {
   filter: invert(1) brightness(1.4);
 }
 
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
 /* keep brand-tinted hero gradient subtle in dark mode */
 :root[data-theme="dark"] .hero-tint {
-  background: linear-gradient(135deg, rgba(255,255,255,0.04), transparent 60%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 60%);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }

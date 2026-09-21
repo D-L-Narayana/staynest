@@ -34,8 +34,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node))
-        setMenuOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) setMenuOpen(false);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
@@ -55,8 +54,7 @@ export default function Navbar() {
         <nav className="hidden items-center gap-1 md:flex">
           {LINKS.map((l) => {
             const Icon = l.icon;
-            const active =
-              l.href === "/" ? pathname === "/" : pathname.startsWith(l.href);
+            const active = l.href === "/" ? pathname === "/" : pathname.startsWith(l.href);
             return (
               <Link
                 key={l.href}
@@ -65,8 +63,7 @@ export default function Navbar() {
                   active ? "text-[var(--brand)]" : "text-[var(--text)]"
                 }`}
               >
-                <Icon size={17} weight={active ? "fill" : "regular"} />{" "}
-                {l.label}
+                <Icon size={17} weight={active ? "fill" : "regular"} /> {l.label}
               </Link>
             );
           })}
@@ -84,9 +81,7 @@ export default function Navbar() {
                 <span className="grid h-7 w-7 place-items-center rounded-full bg-[var(--brand)] text-xs font-bold text-white">
                   {initial}
                 </span>
-                <span className="hidden max-w-[7rem] truncate sm:inline">
-                  {displayName}
-                </span>
+                <span className="hidden max-w-[7rem] truncate sm:inline">{displayName}</span>
                 <CaretDown size={12} />
               </button>
               <AnimatePresence>
@@ -142,7 +137,7 @@ export default function Navbar() {
           )}
 
           <a
-            href="https://github.com/Rahul777111"
+            href="https://github.com/D-L-Narayana"
             target="_blank"
             rel="noreferrer"
             aria-label="GitHub"

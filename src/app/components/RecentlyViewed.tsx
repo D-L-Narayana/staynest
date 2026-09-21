@@ -57,18 +57,10 @@ export default function RecentlyViewed() {
           </div>
         )}
       </div>
-      <div
-        ref={scrollRef}
-        className="no-scrollbar mt-5 flex gap-5 overflow-x-auto pb-2"
-      >
+      <div ref={scrollRef} className="no-scrollbar mt-5 flex gap-5 overflow-x-auto pb-2">
         {items.map((l, i) => (
           <div key={l.id} className="w-[260px] shrink-0">
-            <ListingCard
-              listing={l}
-              index={i}
-              liked={ids.includes(l.id)}
-              onToggle={toggle}
-            />
+            <ListingCard listing={l} index={i} liked={ids.includes(l.id)} onToggle={toggle} />
           </div>
         ))}
       </div>

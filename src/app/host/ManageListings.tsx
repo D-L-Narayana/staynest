@@ -3,20 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  Plus,
-  PencilSimple,
-  Trash,
-  X,
-  House,
-  ArrowSquareOut,
-} from "@phosphor-icons/react";
+import { Plus, PencilSimple, Trash, X, House, ArrowSquareOut } from "@phosphor-icons/react";
 import { CATEGORIES } from "@/lib/listings";
-import {
-  useUserListings,
-  listingToDraft,
-  type ListingDraft,
-} from "@/lib/userListings";
+import { useUserListings, listingToDraft, type ListingDraft } from "@/lib/userListings";
 import type { Listing } from "@/lib/listings";
 
 const EMPTY_DRAFT: ListingDraft = {
@@ -78,9 +67,7 @@ export default function ManageListings() {
         <h2 className="flex items-center gap-2 font-semibold">
           <House size={18} weight="fill" /> Your listings
           {ready && (
-            <span className="text-sm font-normal text-[var(--text-dim)]">
-              ({listings.length})
-            </span>
+            <span className="text-sm font-normal text-[var(--text-dim)]">({listings.length})</span>
           )}
         </h2>
         <button
@@ -101,17 +88,10 @@ export default function ManageListings() {
       ) : (
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {listings.map((l) => (
-            <div
-              key={l.id}
-              className="overflow-hidden rounded-xl border border-[var(--border)]"
-            >
+            <div key={l.id} className="overflow-hidden rounded-xl border border-[var(--border)]">
               <div className="relative aspect-[4/3] bg-[var(--muted)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={l.images[0]}
-                  alt={l.title}
-                  className="h-full w-full object-cover"
-                />
+                <img src={l.images[0]} alt={l.title} className="h-full w-full object-cover" />
               </div>
               <div className="p-3">
                 <p className="truncate text-sm font-medium">{l.title}</p>
@@ -356,13 +336,7 @@ export default function ManageListings() {
 const inputCls =
   "w-full rounded-xl border border-[var(--border)] bg-transparent px-3 py-2.5 text-sm outline-none focus:border-[var(--text)]";
 
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
       <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[var(--text-dim)]">

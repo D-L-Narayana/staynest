@@ -34,6 +34,7 @@ export default function ListingCard({
 
   return (
     <motion.div
+      data-testid="listing-card"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: (index % 8) * 0.04, ease: [0.16, 1, 0.3, 1] }}
@@ -44,6 +45,10 @@ export default function ListingCard({
           <img
             src={listing.images[img]}
             alt={listing.title}
+            width={600}
+            height={450}
+            loading={index < 4 ? "eager" : "lazy"}
+            decoding="async"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
           <button
@@ -94,14 +99,10 @@ export default function ListingCard({
               <Star size={13} weight="fill" color="var(--star)" /> {listing.rating}
             </span>
           </div>
-          <p className="line-clamp-1 text-sm text-[var(--text-dim)]">
-            {listing.title}
-          </p>
+          <p className="line-clamp-1 text-sm text-[var(--text-dim)]">{listing.title}</p>
           <p className="text-sm text-[var(--text-dim)]">{listing.country}</p>
           <p className="mt-1 text-sm">
-            <span className="font-semibold text-[var(--text)]">
-              ${listing.price}
-            </span>
+            <span className="font-semibold text-[var(--text)]">${listing.price}</span>
             <span className="text-[var(--text-dim)]"> night</span>
           </p>
         </div>

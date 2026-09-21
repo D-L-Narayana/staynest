@@ -18,8 +18,7 @@ export default function ThemeSwitcher() {
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node))
-        setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
@@ -46,7 +45,7 @@ export default function ThemeSwitcher() {
             transition={{ duration: 0.16 }}
             className="absolute right-0 top-11 z-50 w-56 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-[var(--shadow)]"
           >
-            <p className="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--text-dim)]">
+            <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-dim)]">
               Appearance
             </p>
             <div className="grid grid-cols-3 gap-1.5">
@@ -57,6 +56,8 @@ export default function ThemeSwitcher() {
                   <button
                     key={m.id}
                     onClick={() => setMode(m.id)}
+                    aria-pressed={on}
+                    data-testid={`theme-${m.id}`}
                     className={`flex flex-col items-center gap-1 rounded-xl border px-2 py-2.5 text-xs transition ${
                       on
                         ? "border-[var(--brand)] text-[var(--brand)]"
@@ -70,7 +71,7 @@ export default function ThemeSwitcher() {
               })}
             </div>
 
-            <p className="mb-2 mt-3 flex items-center gap-1 px-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--text-dim)]">
+            <p className="mb-2 mt-3 flex items-center gap-1 px-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-dim)]">
               <Palette size={12} /> Accent
             </p>
             <div className="flex items-center justify-between px-1">
@@ -82,9 +83,7 @@ export default function ThemeSwitcher() {
                   className="grid h-8 w-8 place-items-center rounded-full transition active:scale-90"
                   style={{ backgroundColor: a.color }}
                 >
-                  {accent === a.id && (
-                    <Check size={15} weight="bold" color="#fff" />
-                  )}
+                  {accent === a.id && <Check size={15} weight="bold" color="#fff" />}
                 </button>
               ))}
             </div>

@@ -39,32 +39,46 @@ export default function ExperiencesPage() {
   const [tab, setTab] = useState<"experiences" | "services">("experiences");
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [services, setServices] = useState<Service[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Which tabs have finished loading; `loading` is derived instead of mirrored.
+  const [loaded, setLoaded] = useState<Record<string, boolean>>({});
+  const [failed, setFailed] = useState<Record<string, boolean>>({});
+  const loading = !loaded[tab] && !failed[tab];
 
   useEffect(() => {
+    if (loaded[tab] || failed[tab]) return;
     let active = true;
-    setLoading(true);
-    const url = tab === "services" ? "/api/experiences?kind=services" : "/api/experiences?kind=experiences";
+    const url =
+      tab === "services" ? "/api/experiences?kind=services" : "/api/experiences?kind=experiences";
     fetch(url)
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((j) => {
         if (!active) return;
         if (tab === "services") setServices(j.items || []);
         else setExperiences(j.items || []);
+        setLoaded((prev) => ({ ...prev, [tab]: true }));
       })
-      .catch(() => {})
-      .finally(() => active && setLoading(false));
+      .catch(() => {
+        if (active) setFailed((prev) => ({ ...prev, [tab]: true }));
+      });
     return () => {
       active = false;
     };
-  }, [tab]);
+  }, [tab, loaded, failed]);
+
+  const retry = () => setFailed((prev) => ({ ...prev, [tab]: false }));
 
   return (
     <div className="min-h-[100dvh]">
       <Navbar />
 
       <section className="relative overflow-hidden border-b border-[var(--border)]">
-        <div className="absolute inset-0 -z-10 opacity-60" style={{ background: "radial-gradient(70% 60% at 85% 0%, color-mix(in srgb, var(--brand) 14%, transparent), transparent 70%)" }} />
+        <div
+          className="absolute inset-0 -z-10 opacity-60"
+          style={{
+            background:
+              "radial-gradient(70% 60% at 85% 0%, color-mix(in srgb, var(--brand) 14%, transparent), transparent 70%)",
+          }}
+        />
         <div className="mx-auto max-w-[1200px] px-5 py-12">
           <motion.h1
             initial={{ opacity: 0, y: 14 }}
@@ -76,8 +90,8 @@ export default function ExperiencesPage() {
             <span className="text-[var(--brand)]">remember for years.</span>
           </motion.h1>
           <p className="mt-3 max-w-xl text-[var(--text-dim)]">
-            Book hands-on experiences led by locals, or add a vetted service to
-            your stay. From pasta with a nonna to a private chef at your door.
+            Book hands-on experiences led by locals, or add a vetted service to your stay. From
+            pasta with a nonna to a private chef at your door.
           </p>
 
           <div className="mt-6 inline-flex rounded-full border border-[var(--border)] bg-[var(--surface)] p-1">
@@ -106,7 +120,20 @@ export default function ExperiencesPage() {
       </section>
 
       <main className="mx-auto max-w-[1200px] px-5 py-8">
-        {loading ? (
+        {failed[tab] ? (
+          <div
+            role="alert"
+            className="rounded-2xl border border-dashed border-[var(--border)] px-6 py-20 text-center"
+          >
+            <p className="font-semibold">We couldn&apos;t load {tab} right now.</p>
+            <button
+              onClick={retry}
+              className="mt-5 rounded-full bg-[var(--brand)] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--brand-dark)]"
+            >
+              Retry
+            </button>
+          </div>
+        ) : loading ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="animate-pulse">
@@ -162,9 +189,7 @@ export default function ExperiencesPage() {
                       <span className="font-semibold">${e.price}</span>
                       <span className="text-[var(--text-dim)]"> / person</span>
                     </p>
-                    <span className="text-xs text-[var(--text-dim)]">
-                      Hosted by {e.host}
-                    </span>
+                    <span className="text-xs text-[var(--text-dim)]">Hosted by {e.host}</span>
                   </div>
                 </div>
               </motion.div>
@@ -206,9 +231,7 @@ export default function ExperiencesPage() {
                   <div className="mt-3 flex items-center justify-between border-t border-[var(--border)] pt-3">
                     <p className="text-sm">
                       <span className="text-[var(--text-dim)]">From </span>
-                      <span className="font-semibold">
-                        ${s.price_from || s.priceFrom}
-                      </span>
+                      <span className="font-semibold">${s.price_from || s.priceFrom}</span>
                       <span className="text-[var(--text-dim)]"> {s.unit}</span>
                     </p>
                   </div>

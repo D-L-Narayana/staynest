@@ -17,8 +17,8 @@ export default function NotFound() {
           We couldn&apos;t find that page
         </h1>
         <p className="mt-3 max-w-md text-[var(--text-dim)]">
-          The stay or page you&apos;re looking for may have been moved or no
-          longer exists. Let&apos;s get you back to exploring.
+          The stay or page you&apos;re looking for may have been moved or no longer exists.
+          Let&apos;s get you back to exploring.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link

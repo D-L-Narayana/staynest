@@ -2,24 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import {
-  X,
-  Envelope,
-  Lock,
-  User,
-  HouseLine,
-  Warning,
-  CheckCircle,
-} from "@phosphor-icons/react";
+import { X, Envelope, Lock, User, HouseLine, Warning, CheckCircle } from "@phosphor-icons/react";
 import { useAuth } from "@/lib/auth";
 
-export default function AuthModal({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+export default function AuthModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { signIn, signUp, continueAsGuest } = useAuth();
   const [tab, setTab] = useState<"login" | "signup">("login");
   const [name, setName] = useState("");
@@ -50,16 +36,12 @@ export default function AuthModal({
     }
     setBusy(true);
     const res =
-      tab === "signup"
-        ? await signUp(email, password, name)
-        : await signIn(email, password);
+      tab === "signup" ? await signUp(email, password, name) : await signIn(email, password);
     setBusy(false);
     if (res.error) {
       setError(res.error);
     } else if (tab === "signup") {
-      setNotice(
-        "Account created. If email confirmation is on, check your inbox, then log in."
-      );
+      setNotice("Account created. If email confirmation is on, check your inbox, then log in.");
       setTab("login");
     } else {
       onClose();
@@ -81,10 +63,7 @@ export default function AuthModal({
           className="fixed inset-0 z-[60] flex items-center justify-center p-4"
           style={{ isolation: "isolate" }}
         >
-          <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={onClose}
-          />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -123,9 +102,7 @@ export default function AuthModal({
                     reset();
                   }}
                   className={`flex-1 rounded-full py-2 font-medium transition ${
-                    tab === t
-                      ? "bg-[var(--brand)] text-white"
-                      : "text-[var(--text)]"
+                    tab === t ? "bg-[var(--brand)] text-white" : "text-[var(--text)]"
                   }`}
                 >
                   {t === "login" ? "Log in" : "Sign up"}
@@ -135,12 +112,7 @@ export default function AuthModal({
 
             <div className="flex flex-col gap-3 p-6">
               {tab === "signup" && (
-                <Field
-                  icon={User}
-                  value={name}
-                  onChange={setName}
-                  placeholder="Full name"
-                />
+                <Field icon={User} value={name} onChange={setName} placeholder="Full name" />
               )}
               <Field
                 icon={Envelope}
@@ -174,11 +146,7 @@ export default function AuthModal({
                 disabled={busy}
                 className="mt-1 rounded-xl bg-[var(--brand)] py-2.5 font-semibold text-white transition hover:bg-[var(--brand-dark)] active:scale-[0.99] disabled:opacity-60"
               >
-                {busy
-                  ? "Please wait..."
-                  : tab === "login"
-                    ? "Log in"
-                    : "Create account"}
+                {busy ? "Please wait..." : tab === "login" ? "Log in" : "Create account"}
               </button>
 
               <div className="flex items-center gap-3 py-1 text-xs text-[var(--text-dim)]">

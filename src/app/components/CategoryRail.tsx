@@ -49,9 +49,7 @@ export default function CategoryRail({
             }`}
           >
             <Icon size={24} weight={isActive ? "fill" : "regular"} />
-            <span className="whitespace-nowrap text-xs font-medium">
-              {c.label}
-            </span>
+            <span className="whitespace-nowrap text-xs font-medium">{c.label}</span>
           </button>
         );
       })}

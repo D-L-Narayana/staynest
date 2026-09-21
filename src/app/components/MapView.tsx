@@ -50,18 +50,10 @@ export default function MapView({
   listings: Listing[];
   likedIds?: string[];
 }) {
-  const valid = useMemo(
-    () => listings.filter((l) => !(l.lat === 0 && l.lng === 0)),
-    [listings]
-  );
-  const points = useMemo<[number, number][]>(
-    () => valid.map((l) => [l.lat, l.lng]),
-    [valid]
-  );
+  const valid = useMemo(() => listings.filter((l) => !(l.lat === 0 && l.lng === 0)), [listings]);
+  const points = useMemo<[number, number][]>(() => valid.map((l) => [l.lat, l.lng]), [valid]);
 
-  const center: [number, number] = points.length
-    ? points[0]
-    : [20, 0];
+  const center: [number, number] = points.length ? points[0] : [20, 0];
 
   return (
     <div className="overflow-hidden rounded-2xl border border-[var(--border)]">

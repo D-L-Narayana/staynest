@@ -24,9 +24,7 @@ export default function WishlistPage() {
       <main className="mx-auto max-w-[1200px] px-5 py-8">
         <div className="flex items-center gap-2">
           <Heart size={26} weight="fill" className="text-[var(--brand)]" />
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            Your wishlist
-          </h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Your wishlist</h1>
         </div>
         <p className="mt-1 text-sm text-[var(--text-dim)]">
           Saved stays sync to this browser through Supabase.
@@ -48,8 +46,7 @@ export default function WishlistPage() {
             </span>
             <p className="mt-4 font-medium">No saved stays yet</p>
             <p className="mt-1 max-w-sm text-sm text-[var(--text-dim)]">
-              Tap the heart on any stay to keep it here. Build the trip before
-              you book it.
+              Tap the heart on any stay to keep it here. Build the trip before you book it.
             </p>
             <Link
               href="/"
@@ -61,13 +58,7 @@ export default function WishlistPage() {
         ) : (
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {saved.map((l, i) => (
-              <ListingCard
-                key={l.id}
-                listing={l}
-                index={i}
-                liked
-                onToggle={toggle}
-              />
+              <ListingCard key={l.id} listing={l} index={i} liked onToggle={toggle} />
             ))}
           </div>
         )}

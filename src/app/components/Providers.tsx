@@ -3,8 +3,10 @@
 import { ThemeProvider } from "@/lib/theme";
 import { AuthProvider } from "@/lib/auth";
 import { UIProvider, useUI } from "@/lib/ui";
+import { WishlistProvider } from "@/lib/wishlist";
 import Assistant from "./Assistant";
 import AuthModal from "./AuthModal";
+import MobileTabBar from "./MobileTabBar";
 
 function GlobalOverlays() {
   const { authOpen, closeAuth } = useUI();
@@ -12,6 +14,7 @@ function GlobalOverlays() {
     <>
       <Assistant />
       <AuthModal open={authOpen} onClose={closeAuth} />
+      <MobileTabBar />
     </>
   );
 }
@@ -21,8 +24,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <ThemeProvider>
       <AuthProvider>
         <UIProvider>
-          {children}
-          <GlobalOverlays />
+          <WishlistProvider>
+            {children}
+            <GlobalOverlays />
+          </WishlistProvider>
         </UIProvider>
       </AuthProvider>
     </ThemeProvider>

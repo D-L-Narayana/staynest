@@ -3,7 +3,11 @@
 import { useRef, useEffect } from "react";
 import { motion } from "motion/react";
 import { MapPin, CaretLeft, CaretRight } from "@phosphor-icons/react";
-import { DESTINATIONS, INSPIRATION, galleryUrl } from "@/lib/gallery";
+import { INSPIRATION, galleryUrl } from "@/lib/gallery";
+import { LISTINGS } from "@/lib/listings";
+import { getDestinations } from "@/lib/destinations";
+
+const DESTINATIONS = getDestinations(LISTINGS);
 
 export function DestinationStrip({ onPick }: { onPick?: (city: string) => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -58,10 +62,7 @@ export function DestinationStrip({ onPick }: { onPick?: (city: string) => void }
           </button>
         </div>
       </div>
-      <div
-        ref={scrollRef}
-        className="no-scrollbar mt-5 flex gap-4 overflow-x-auto pb-2"
-      >
+      <div ref={scrollRef} className="no-scrollbar mt-5 flex gap-4 overflow-x-auto pb-2">
         {DESTINATIONS.map((d, i) => (
           <motion.button
             key={d.city}
@@ -75,7 +76,7 @@ export function DestinationStrip({ onPick }: { onPick?: (city: string) => void }
             <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-[var(--muted)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={galleryUrl(d.photo, 500)}
+                src={d.photo}
                 alt={`${d.city}, ${d.country}`}
                 loading="lazy"
                 className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
@@ -85,8 +86,8 @@ export function DestinationStrip({ onPick }: { onPick?: (city: string) => void }
                 <p className="flex items-center gap-1 text-sm font-semibold">
                   <MapPin size={13} weight="fill" /> {d.city}
                 </p>
-                <p className="text-[11px] text-white/85">
-                  {d.country} · {d.stays} stays
+                <p className="text-xs text-white/85">
+                  {d.country} · {d.stays} {d.stays === 1 ? "stay" : "stays"} · from ${d.fromPrice}
                 </p>
               </div>
             </div>
@@ -100,9 +101,7 @@ export function DestinationStrip({ onPick }: { onPick?: (city: string) => void }
 export function InspirationGallery() {
   return (
     <section className="mx-auto max-w-[1200px] px-5 py-10">
-      <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
-        Get inspired
-      </h2>
+      <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">Get inspired</h2>
       <p className="mt-1 text-sm text-[var(--text-dim)]">
         A wall of real places, interiors and views to spark your next trip.
       </p>

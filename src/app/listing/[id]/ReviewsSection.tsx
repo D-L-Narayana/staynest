@@ -2,12 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import {
-  Star,
-  CheckCircle,
-  Warning,
-  PaperPlaneTilt,
-} from "@phosphor-icons/react";
+import { Star, CheckCircle, Warning, PaperPlaneTilt } from "@phosphor-icons/react";
 
 type Review = {
   id: string;
@@ -78,15 +73,14 @@ export default function ReviewsSection({
   }, [listingId]);
 
   const avg = (key: keyof Review) => {
-    const nums = list.map((r) => Number(r[key])).filter((n) => !Number.isNaN(n));
+    const nums = list.map((r) => Number(r[key])).filter((n) => Number.isFinite(n) && n > 0);
     if (!nums.length) return rating;
     return nums.reduce((s, n) => s + n, 0) / nums.length;
   };
-  const overallAvg = list.length
-    ? list.reduce((s, r) => s + r.rating, 0) / list.length
-    : rating;
+  const overallAvg = list.length ? list.reduce((s, r) => s + r.rating, 0) / list.length : rating;
 
-  const totalReviews = list.length || reviews;
+  // Until the live list arrives, show the server-rendered count (from the DB).
+  const totalReviews = loading ? reviews : list.length;
 
   const submit = async () => {
     setFormError("");
@@ -122,32 +116,28 @@ export default function ReviewsSection({
     <section className="border-b border-[var(--border)] py-8">
       <h3 className="flex items-center gap-2 text-lg font-semibold">
         <Star size={20} weight="fill" color="var(--star)" />
-        {overallAvg.toFixed(2)} · {totalReviews} reviews
+        {overallAvg.toFixed(2)} · {totalReviews} {totalReviews === 1 ? "review" : "reviews"}
       </h3>
 
       {/* category breakdown */}
       <div className="mt-6 grid grid-cols-1 gap-x-12 gap-y-3 sm:grid-cols-2">
-        {[...CATS, { key: "rating" as keyof Review, label: "Overall" }].map(
-          (c) => {
-            const value = c.key === "rating" ? overallAvg : avg(c.key);
-            return (
-              <div key={c.label} className="flex items-center gap-3">
-                <span className="w-28 shrink-0 text-sm text-[var(--text)]">
-                  {c.label}
-                </span>
-                <div className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--border)]">
-                  <div
-                    className="h-full rounded-full bg-[var(--text)]"
-                    style={{ width: `${(value / 5) * 100}%` }}
-                  />
-                </div>
-                <span className="w-8 shrink-0 text-right text-sm font-medium">
-                  {value.toFixed(1)}
-                </span>
+        {[...CATS, { key: "rating" as keyof Review, label: "Overall" }].map((c) => {
+          const value = c.key === "rating" ? overallAvg : avg(c.key);
+          return (
+            <div key={c.label} className="flex items-center gap-3">
+              <span className="w-28 shrink-0 text-sm text-[var(--text)]">{c.label}</span>
+              <div className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--border)]">
+                <div
+                  className="h-full rounded-full bg-[var(--text)]"
+                  style={{ width: `${(value / 5) * 100}%` }}
+                />
               </div>
-            );
-          }
-        )}
+              <span className="w-8 shrink-0 text-right text-sm font-medium">
+                {value.toFixed(1)}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
       {/* review cards */}
@@ -176,6 +166,7 @@ export default function ReviewsSection({
           {list.map((r, i) => (
             <motion.div
               key={r.id}
+              data-testid="review"
               initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
@@ -187,9 +178,7 @@ export default function ReviewsSection({
                 </span>
                 <div className="leading-tight">
                   <p className="font-medium">{r.author}</p>
-                  <p className="text-xs text-[var(--text-dim)]">
-                    {fmtDate(r.created_at)}
-                  </p>
+                  <p className="text-xs text-[var(--text-dim)]">{fmtDate(r.created_at)}</p>
                 </div>
               </div>
               <div className="mt-2 flex gap-0.5">
@@ -202,9 +191,7 @@ export default function ReviewsSection({
                   />
                 ))}
               </div>
-              <p className="mt-2 line-clamp-4 leading-relaxed text-[var(--text)]">
-                {r.body}
-              </p>
+              <p className="mt-2 line-clamp-4 leading-relaxed text-[var(--text)]">{r.body}</p>
             </motion.div>
           ))}
         </div>
@@ -229,11 +216,7 @@ export default function ReviewsSection({
                 onClick={() => setStars(s + 1)}
                 aria-label={`${s + 1} stars`}
               >
-                <Star
-                  size={22}
-                  weight="fill"
-                  color={s < stars ? "var(--star)" : "var(--border)"}
-                />
+                <Star size={22} weight="fill" color={s < stars ? "var(--star)" : "var(--border)"} />
               </button>
             ))}
           </div>
@@ -267,13 +250,7 @@ export default function ReviewsSection({
   );
 }
 
-export function InquiryForm({
-  listingId,
-  hostName,
-}: {
-  listingId: string;
-  hostName: string;
-}) {
+export function InquiryForm({ listingId, hostName }: { listingId: string; hostName: string }) {
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -306,14 +283,8 @@ export function InquiryForm({
     return (
       <div className="mt-4 rounded-2xl border border-[var(--border)] p-5">
         <p className="flex items-start gap-2 text-sm">
-          <CheckCircle
-            size={20}
-            weight="fill"
-            className="shrink-0 text-green-600"
-          />
-          <span>
-            Message sent to {hostName}. They typically reply within an hour.
-          </span>
+          <CheckCircle size={20} weight="fill" className="shrink-0 text-green-600" />
+          <span>Message sent to {hostName}. They typically reply within an hour.</span>
         </p>
       </div>
     );

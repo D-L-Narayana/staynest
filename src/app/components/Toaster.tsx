@@ -35,7 +35,7 @@ export default function Toaster() {
   }, [remove]);
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-[3000] flex flex-col items-center gap-2 px-4">
+    <div className="pointer-events-none fixed inset-x-0 bottom-20 z-[3000] md:bottom-6 flex flex-col items-center gap-2 px-4">
       <AnimatePresence>
         {toasts.map((t) => {
           const Icon = ICONS[t.kind];

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import {
   Star,
@@ -13,9 +13,8 @@ import {
   Key,
   Medal,
 } from "@phosphor-icons/react";
-import { getUserListing } from "@/lib/userListings";
+import { useUserListings } from "@/lib/userListings";
 import { recordView } from "@/lib/recentlyViewed";
-import type { Listing } from "@/lib/listings";
 import Navbar from "@/app/components/Navbar";
 import BookingWidget from "@/app/components/BookingWidget";
 import ReviewsSection, { InquiryForm } from "./ReviewsSection";
@@ -28,15 +27,12 @@ import SiteFooter from "@/app/components/SiteFooter";
 const HL_ICONS = [Sparkle, Key, Medal];
 
 export default function UserListingDetail({ id }: { id: string }) {
-  const [listing, setListing] = useState<Listing | null>(null);
-  const [ready, setReady] = useState(false);
+  const { listings, ready } = useUserListings();
+  const listing = listings.find((l) => l.id === id) || null;
 
   useEffect(() => {
-    const found = getUserListing(id) || null;
-    setListing(found);
-    setReady(true);
-    if (found) recordView(found);
-  }, [id]);
+    if (listing) recordView(listing);
+  }, [listing]);
 
   if (!ready) {
     return (
@@ -58,8 +54,8 @@ export default function UserListingDetail({ id }: { id: string }) {
           <House size={48} className="text-[var(--text-dim)]" />
           <h1 className="mt-4 text-2xl font-bold">Stay not found</h1>
           <p className="mt-2 max-w-md text-sm text-[var(--text-dim)]">
-            This listing could not be found. Host-created stays are saved in the
-            browser they were added on.
+            This listing could not be found. Host-created stays are saved in the browser they were
+            added on.
           </p>
           <Link
             href="/"
@@ -94,9 +90,7 @@ export default function UserListingDetail({ id }: { id: string }) {
           Your listing
         </span>
         <div className="mt-2 flex items-start justify-between gap-3">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-            {listing.title}
-          </h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{listing.title}</h1>
           <ShareButton title={listing.title} />
         </div>
         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-[var(--text-dim)]">

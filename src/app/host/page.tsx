@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import {
-  CurrencyDollar,
-  Calendar,
-  TrendUp,
-  Star,
-  House,
-  Bed,
-} from "@phosphor-icons/react";
+import { CurrencyDollar, Calendar, TrendUp, Star, House, Bed } from "@phosphor-icons/react";
 import Navbar from "../components/Navbar";
 import ManageListings from "./ManageListings";
 
@@ -47,8 +40,9 @@ type HostData = {
   }[];
 };
 
-const money = (n: number) =>
-  "$" + n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+const money = (n: number) => "$" + n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+const compactMoney = (n: number) =>
+  "$" + new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(n);
 
 export default function HostPage() {
   const [data, setData] = useState<HostData | null>(null);
@@ -91,17 +85,13 @@ export default function HostPage() {
       ]
     : [];
 
-  const maxTrend = data
-    ? Math.max(...data.trend.map((t) => t.revenue), 1)
-    : 1;
+  const maxTrend = data ? Math.max(...data.trend.map((t) => t.revenue), 1) : 1;
 
   return (
     <div className="min-h-[100dvh] bg-[var(--muted)]">
       <Navbar />
       <main className="mx-auto max-w-[1200px] px-5 py-8">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Host dashboard
-        </h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Host dashboard</h1>
         <p className="mt-1 text-sm text-[var(--text-dim)]">
           Welcome back. Here is how your portfolio is performing.
         </p>
@@ -111,10 +101,7 @@ export default function HostPage() {
         {loading || !data ? (
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-28 animate-pulse rounded-2xl bg-[var(--surface)]"
-              />
+              <div key={i} className="h-28 animate-pulse rounded-2xl bg-[var(--surface)]" />
             ))}
           </div>
         ) : (
@@ -134,9 +121,7 @@ export default function HostPage() {
                     <span className="grid h-9 w-9 place-items-center rounded-full bg-[var(--brand)]/10 text-[var(--brand)]">
                       <Icon size={18} weight="fill" />
                     </span>
-                    <p className="mt-3 text-2xl font-bold tracking-tight">
-                      {k.value}
-                    </p>
+                    <p className="mt-3 text-2xl font-bold tracking-tight">{k.value}</p>
                     <p className="text-sm text-[var(--text)]">{k.label}</p>
                     <p className="text-xs text-[var(--text-dim)]">{k.sub}</p>
                   </motion.div>
@@ -154,17 +139,14 @@ export default function HostPage() {
               </div>
               <div className="mt-6 flex items-end gap-3 sm:gap-6">
                 {data.trend.map((t, i) => (
-                  <div
-                    key={t.month}
-                    className="flex flex-1 flex-col items-center gap-2"
-                  >
-                    <span className="text-xs font-medium text-[var(--text-dim)]">
+                  <div key={t.month} className="flex min-w-0 flex-1 flex-col items-center gap-2">
+                    <span className="text-xs font-medium text-[var(--text-dim)] sm:hidden">
+                      {compactMoney(t.revenue)}
+                    </span>
+                    <span className="hidden text-xs font-medium text-[var(--text-dim)] sm:block">
                       {money(t.revenue)}
                     </span>
-                    <div
-                      className="flex w-full items-end"
-                      style={{ height: 160 }}
-                    >
+                    <div className="flex w-full items-end" style={{ height: 160 }}>
                       <motion.div
                         initial={{ scaleY: 0 }}
                         animate={{ scaleY: 1 }}
@@ -173,18 +155,15 @@ export default function HostPage() {
                           delay: i * 0.06,
                           ease: [0.16, 1, 0.3, 1],
                         }}
+                        role="img"
+                        aria-label={`${t.month}: ${money(t.revenue)}`}
                         className="w-full origin-bottom rounded-t-lg bg-[var(--brand)]"
                         style={{
-                          height: `${Math.max(
-                            (t.revenue / maxTrend) * 160,
-                            6
-                          )}px`,
+                          height: `${Math.max((t.revenue / maxTrend) * 160, 6)}px`,
                         }}
                       />
                     </div>
-                    <span className="text-xs text-[var(--text-dim)]">
-                      {t.month}
-                    </span>
+                    <span className="text-xs text-[var(--text-dim)]">{t.month}</span>
                   </div>
                 ))}
               </div>
@@ -192,7 +171,7 @@ export default function HostPage() {
 
             <div className="mt-4 grid gap-4 lg:grid-cols-[1.5fr_1fr]">
               {/* listing performance */}
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
+              <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
                 <h2 className="flex items-center gap-2 font-semibold">
                   <House size={18} weight="fill" /> Listing performance
                 </h2>
@@ -201,16 +180,10 @@ export default function HostPage() {
                     <div key={l.id} className="flex items-center gap-3 py-3">
                       <div className="h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-[var(--muted)]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={l.image}
-                          alt={l.title}
-                          className="h-full w-full object-cover"
-                        />
+                        <img src={l.image} alt={l.title} className="h-full w-full object-cover" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">
-                          {l.title}
-                        </p>
+                        <p className="truncate text-sm font-medium">{l.title}</p>
                         <p className="text-xs text-[var(--text-dim)]">
                           {l.location} · {l.bookings} bookings
                         </p>
@@ -218,9 +191,7 @@ export default function HostPage() {
                       <div className="hidden w-28 sm:block">
                         <div className="flex items-center justify-between text-xs text-[var(--text-dim)]">
                           <span>Occupancy</span>
-                          <span className="font-medium text-[var(--text)]">
-                            {l.occupancy}%
-                          </span>
+                          <span className="font-medium text-[var(--text)]">{l.occupancy}%</span>
                         </div>
                         <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[var(--border)]">
                           <div
@@ -241,33 +212,25 @@ export default function HostPage() {
               </div>
 
               {/* recent bookings */}
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
+              <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
                 <h2 className="flex items-center gap-2 font-semibold">
                   <Bed size={18} weight="fill" /> Recent bookings
                 </h2>
                 {data.recentBookings.length === 0 ? (
                   <p className="mt-4 text-sm text-[var(--text-dim)]">
-                    No live bookings yet. Bookings made on StayNest will appear
-                    here in real time.
+                    No live bookings yet. Bookings made on StayNest will appear here in real time.
                   </p>
                 ) : (
                   <div className="mt-4 flex flex-col divide-y divide-[var(--border)]">
                     {data.recentBookings.map((b) => (
-                      <div
-                        key={b.code}
-                        className="flex items-center justify-between py-3"
-                      >
+                      <div key={b.code} className="flex items-center justify-between py-3">
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-medium">
-                            {b.listing_title}
-                          </p>
+                          <p className="truncate text-sm font-medium">{b.listing_title}</p>
                           <p className="text-xs text-[var(--text-dim)]">
                             {b.check_in} to {b.check_out} · {b.guests} guests
                           </p>
                         </div>
-                        <p className="shrink-0 text-sm font-semibold">
-                          {money(b.total)}
-                        </p>
+                        <p className="shrink-0 text-sm font-semibold">{money(b.total)}</p>
                       </div>
                     ))}
                   </div>

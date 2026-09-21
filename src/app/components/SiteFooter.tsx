@@ -28,25 +28,44 @@ export default function SiteFooter() {
               StayNest
             </Link>
             <p className="mt-3 max-w-xs text-sm text-[var(--text-dim)]">
-              Unique places to stay around the world. Search, pick your dates,
-              and book in seconds.
+              Unique places to stay around the world. Search, pick your dates, and book in seconds.
             </p>
           </div>
 
           <div>
             <h4 className="text-sm font-semibold">Explore</h4>
             <ul className="mt-3 space-y-2 text-sm text-[var(--text-dim)]">
-              <li><Link href="/" className="transition hover:text-[var(--text)]">All stays</Link></li>
-              <li><Link href="/wishlist" className="transition hover:text-[var(--text)]">Wishlist</Link></li>
-              <li><Link href="/trips" className="transition hover:text-[var(--text)]">Trips</Link></li>
+              <li>
+                <Link href="/" className="transition hover:text-[var(--text)]">
+                  All stays
+                </Link>
+              </li>
+              <li>
+                <Link href="/wishlist" className="transition hover:text-[var(--text)]">
+                  Wishlist
+                </Link>
+              </li>
+              <li>
+                <Link href="/trips" className="transition hover:text-[var(--text)]">
+                  Trips
+                </Link>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-sm font-semibold">Hosting</h4>
             <ul className="mt-3 space-y-2 text-sm text-[var(--text-dim)]">
-              <li><Link href="/host" className="transition hover:text-[var(--text)]">Host dashboard</Link></li>
-              <li><Link href="/host" className="transition hover:text-[var(--text)]">Add a listing</Link></li>
+              <li>
+                <Link href="/host" className="transition hover:text-[var(--text)]">
+                  Host dashboard
+                </Link>
+              </li>
+              <li>
+                <Link href="/host" className="transition hover:text-[var(--text)]">
+                  Add a listing
+                </Link>
+              </li>
             </ul>
           </div>
 
