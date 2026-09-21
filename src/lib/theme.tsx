@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
+import { createContext, useContext, useEffect, useCallback, useSyncExternalStore } from "react";
 
 export type ThemeMode = "light" | "dark" | "system";
 export type Accent = "coral" | "ocean" | "forest" | "violet" | "sunset";
@@ -32,75 +26,96 @@ type Ctx = {
 
 const ThemeContext = createContext<Ctx | null>(null);
 
+const MODES: ThemeMode[] = ["light", "dark", "system"];
+const ACCENT_IDS = ACCENTS.map((a) => a.id);
+
+// Preferences are stored as plain strings (not JSON) so the no-flash inline
+// script below can read them without parsing.
+function readPref<T extends string>(key: string, allowed: readonly T[], fallback: T): T {
+  if (typeof window === "undefined") return fallback;
+  try {
+    const v = window.localStorage.getItem(key) as T | null;
+    return v && allowed.includes(v) ? v : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+const prefListeners = new Set<() => void>();
+function emitPref() {
+  prefListeners.forEach((cb) => cb());
+}
+function subscribePrefs(cb: () => void) {
+  prefListeners.add(cb);
+  const mql =
+    typeof window !== "undefined" ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+  mql?.addEventListener("change", cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    prefListeners.delete(cb);
+    mql?.removeEventListener("change", cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
 function systemPrefersDark() {
   if (typeof window === "undefined") return false;
   return window.matchMedia("(prefers-color-scheme: dark)").matches;
 }
 
+export function resolveMode(mode: ThemeMode, prefersDark: boolean): "light" | "dark" {
+  return mode === "dark" || (mode === "system" && prefersDark) ? "dark" : "light";
+}
+
 function applyTheme(mode: ThemeMode, accent: Accent) {
   if (typeof document === "undefined") return;
   const root = document.documentElement;
-  const dark = mode === "dark" || (mode === "system" && systemPrefersDark());
-  root.setAttribute("data-theme", dark ? "dark" : "light");
+  root.setAttribute("data-theme", resolveMode(mode, systemPrefersDark()));
   root.setAttribute("data-accent", accent);
+  root.style.colorScheme = resolveMode(mode, systemPrefersDark());
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setModeState] = useState<ThemeMode>("system");
-  const [accent, setAccentState] = useState<Accent>("coral");
-  const [resolved, setResolved] = useState<"light" | "dark">("light");
+  // External-store reads: no effect → setState round trip, no hydration flash
+  // (the server snapshot matches the inline no-flash script defaults).
+  const mode = useSyncExternalStore(
+    subscribePrefs,
+    () => readPref(THEME_KEY, MODES, "system"),
+    () => "system" as ThemeMode
+  );
+  const accent = useSyncExternalStore(
+    subscribePrefs,
+    () => readPref(ACCENT_KEY, ACCENT_IDS, "coral"),
+    () => "coral" as Accent
+  );
+  const prefersDark = useSyncExternalStore(subscribePrefs, systemPrefersDark, () => false);
+  const resolved = resolveMode(mode, prefersDark);
 
+  // Keep the <html> attributes in sync with the resolved theme (external system).
   useEffect(() => {
-    const m = (localStorage.getItem(THEME_KEY) as ThemeMode) || "system";
-    const a = (localStorage.getItem(ACCENT_KEY) as Accent) || "coral";
-    setModeState(m);
-    setAccentState(a);
-    applyTheme(m, a);
-    setResolved(
-      m === "dark" || (m === "system" && systemPrefersDark()) ? "dark" : "light"
-    );
+    applyTheme(mode, accent);
+  }, [mode, accent, prefersDark]);
+
+  const setMode = useCallback((m: ThemeMode) => {
+    try {
+      localStorage.setItem(THEME_KEY, m);
+    } catch {
+      /* ignore */
+    }
+    emitPref();
   }, []);
 
-  // react to OS theme changes while in system mode
-  useEffect(() => {
-    const mql = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => {
-      if (mode === "system") {
-        applyTheme("system", accent);
-        setResolved(systemPrefersDark() ? "dark" : "light");
-      }
-    };
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  }, [mode, accent]);
-
-  const setMode = useCallback(
-    (m: ThemeMode) => {
-      setModeState(m);
-      localStorage.setItem(THEME_KEY, m);
-      applyTheme(m, accent);
-      setResolved(
-        m === "dark" || (m === "system" && systemPrefersDark())
-          ? "dark"
-          : "light"
-      );
-    },
-    [accent]
-  );
-
-  const setAccent = useCallback(
-    (a: Accent) => {
-      setAccentState(a);
+  const setAccent = useCallback((a: Accent) => {
+    try {
       localStorage.setItem(ACCENT_KEY, a);
-      applyTheme(mode, a);
-    },
-    [mode]
-  );
+    } catch {
+      /* ignore */
+    }
+    emitPref();
+  }, []);
 
   return (
-    <ThemeContext.Provider
-      value={{ mode, accent, resolved, setMode, setAccent }}
-    >
+    <ThemeContext.Provider value={{ mode, accent, resolved, setMode, setAccent }}>
       {children}
     </ThemeContext.Provider>
   );

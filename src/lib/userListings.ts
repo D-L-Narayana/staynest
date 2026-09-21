@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
+import { createLocalStore, useHydrated } from "@/lib/storage";
 import type { Listing } from "@/lib/listings";
 
 // Host-created listings live in the browser (localStorage). They are merged
@@ -40,8 +41,7 @@ function slugify(s: string) {
 // Build a complete Listing (matching the seed shape) from a lighter draft.
 export function draftToListing(d: ListingDraft): Listing {
   const id =
-    d.id ||
-    "my-" + (slugify(d.title) || "stay") + "-" + Math.random().toString(36).slice(2, 6);
+    d.id || "my-" + (slugify(d.title) || "stay") + "-" + Math.random().toString(36).slice(2, 6);
   const img =
     d.image?.trim() ||
     "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80";
@@ -70,7 +70,12 @@ export function draftToListing(d: ListingDraft): Listing {
     description:
       d.description.trim() ||
       "A brand-new StayNest listing. Add a description from the host dashboard to tell guests what makes this place special.",
-    host: { name: d.hostName.trim() || "You", since: String(new Date().getFullYear()), superhost: Boolean(d.superhost), trips: 0 },
+    host: {
+      name: d.hostName.trim() || "You",
+      since: String(new Date().getFullYear()),
+      superhost: Boolean(d.superhost),
+      trips: 0,
+    },
     lat: Number.isFinite(d.lat) ? d.lat : 0,
     lng: Number.isFinite(d.lng) ? d.lng : 0,
   };
@@ -99,62 +104,34 @@ export function listingToDraft(l: Listing): ListingDraft {
   };
 }
 
-export function readUserListings(): Listing[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Listing[]) : [];
-  } catch {
-    return [];
-  }
-}
+export const userListingsStore = createLocalStore<Listing[]>(KEY, []);
 
-function writeUserListings(list: Listing[]) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(list));
-  } catch {
-    /* ignore */
-  }
+export function readUserListings(): Listing[] {
+  return userListingsStore.read();
 }
 
 export function getUserListing(id: string): Listing | undefined {
   return readUserListings().find((l) => l.id === id);
 }
 
+export function upsertUserListing(draft: ListingDraft): Listing {
+  const listing = draftToListing(draft);
+  userListingsStore.write((prev) => {
+    const idx = prev.findIndex((l) => l.id === listing.id);
+    return idx >= 0 ? prev.map((l) => (l.id === listing.id ? listing : l)) : [listing, ...prev];
+  });
+  return listing;
+}
+
+export function removeUserListing(id: string) {
+  userListingsStore.write((prev) => prev.filter((l) => l.id !== id));
+}
+
+/** Host-created listings for this browser (see `storage.ts`). */
 export function useUserListings() {
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [ready, setReady] = useState(false);
-
-  const reload = useCallback(() => {
-    setListings(readUserListings());
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    reload();
-  }, [reload]);
-
-  const upsert = useCallback((draft: ListingDraft) => {
-    const listing = draftToListing(draft);
-    setListings((prev) => {
-      const idx = prev.findIndex((l) => l.id === listing.id);
-      const next =
-        idx >= 0
-          ? prev.map((l) => (l.id === listing.id ? listing : l))
-          : [listing, ...prev];
-      writeUserListings(next);
-      return next;
-    });
-    return listing;
-  }, []);
-
-  const remove = useCallback((id: string) => {
-    setListings((prev) => {
-      const next = prev.filter((l) => l.id !== id);
-      writeUserListings(next);
-      return next;
-    });
-  }, []);
-
-  return { listings, ready, upsert, remove, reload };
+  const listings = userListingsStore.useValue();
+  const ready = useHydrated();
+  const upsert = useCallback((draft: ListingDraft) => upsertUserListing(draft), []);
+  const remove = useCallback((id: string) => removeUserListing(id), []);
+  return { listings, ready, upsert, remove };
 }

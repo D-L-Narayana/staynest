@@ -14,11 +14,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
   const [authOpen, setAuthOpen] = useState(false);
   const openAuth = useCallback(() => setAuthOpen(true), []);
   const closeAuth = useCallback(() => setAuthOpen(false), []);
-  return (
-    <Ctx.Provider value={{ authOpen, openAuth, closeAuth }}>
-      {children}
-    </Ctx.Provider>
-  );
+  return <Ctx.Provider value={{ authOpen, openAuth, closeAuth }}>{children}</Ctx.Provider>;
 }
 
 export function useUI() {
